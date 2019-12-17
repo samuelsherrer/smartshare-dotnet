@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/SamuelSlf/smartshare-dotnet</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>Client HTTP para consumir dados do sistema de gestão de documentos SmartShare da Selbetti.</Description>
   </PropertyGroup>
 
   <ItemGroup>
