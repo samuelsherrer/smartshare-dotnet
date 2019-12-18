@@ -2,10 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageIconUrl />
+    <PackageIconUrl>https://i.imgur.com/X49zALe.jpg</PackageIconUrl>
     <RepositoryUrl>https://github.com/SamuelSlf/smartshare-dotnet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Description>Client HTTP para consumir dados do sistema de gestão de documentos SmartShare da Selbetti.</Description>
+    <Authors>Samuel Sherrer</Authors>
+    <Company />
+    <Product>SmartShare</Product>
+    <PackageProjectUrl>https://www.selbetti.com.br/selbetti/smart-share-gestao-de-documentos.php</PackageProjectUrl>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
