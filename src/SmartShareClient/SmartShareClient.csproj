@@ -10,8 +10,9 @@
     <Company />
     <Product>SmartShare</Product>
     <PackageProjectUrl>https://www.selbetti.com.br/selbetti/smart-share-gestao-de-documentos.php</PackageProjectUrl>
-    <AssemblyVersion>1.0.0.1</AssemblyVersion>
-    <FileVersion>1.0.0.1</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
