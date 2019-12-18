@@ -28,13 +28,13 @@ namespace SmartShareClient.Examples
         {
             var validarLogin = await _smartShareClient.ValidarLogin();
 
-            //await EnviarArquivo(validarLogin.tokenUsuario);
-            //await ListarArquivo(validarLogin.tokenUsuario);
-            //await ObterArquivo(validarLogin.tokenUsuario);
-            //await DeletarArquivo(validarLogin.tokenUsuario);
+            //await UploadoDocumento(validarLogin.tokenUsuario);
+            //await ListarDocumentos(validarLogin.tokenUsuario);
+            //await ObterDocumento(validarLogin.tokenUsuario);
+            //await DeletarDocumento(validarLogin.tokenUsuario);
         }
 
-        static async Task EnviarArquivo(string token)
+        static async Task UploadoDocumento(string token)
         {
             // Enviar arquivo.
             var arquivo = new UploadDocumentoRequest()
@@ -65,10 +65,10 @@ namespace SmartShareClient.Examples
                 file = Convert.ToBase64String(null)
             };
 
-            var result = await _smartShareClient.UploadArquivo(arquivo, token);
+            var result = await _smartShareClient.UploadDocumento(arquivo, token);
         }
 
-        static async Task ListarArquivo(string token)
+        static async Task ListarDocumentos(string token)
         {
             var listaParametros = new ListaDocumentoRequest()
             {
@@ -88,12 +88,12 @@ namespace SmartShareClient.Examples
             var retorno = await _smartShareClient.ListarDocumentos(listaParametros, token);
         }
 
-        static async Task ObterArquivo(string token)
+        static async Task ObterDocumento(string token)
         {
             var retorno = await _smartShareClient.ObterDocumento(0, token);
         }
 
-        static async Task DeletarArquivo(string token)
+        static async Task DeletarDocumento(string token)
         {
             var retorno = await _smartShareClient.ExcluirDocumento(0, 1, token);
         }

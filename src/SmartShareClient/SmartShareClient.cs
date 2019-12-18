@@ -130,7 +130,7 @@ namespace SmartShareClient
             }
         }
 
-        public async Task<UploadDocumentoResponse> UploadArquivo(UploadDocumentoRequest documentoRequest, string token)
+        public async Task<UploadDocumentoResponse> UploadDocumento(UploadDocumentoRequest documentoRequest, string token)
         {
             if (token == null)
                 throw new ArgumentNullException(nameof(token));

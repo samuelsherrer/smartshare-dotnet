@@ -12,6 +12,6 @@ namespace SmartShareClient
         Task<ListaDocumentosResponse> ObterDocumento(int idDocumento, string tokenSmartshare);
         Task<bool> ExcluirDocumento(int cdDocumento, int cdVersao, string token);
         Task<IList<ListaDocumentosResponse>> ListarDocumentos(ListaDocumentoRequest documentoRequest, string token);
-        Task<UploadDocumentoResponse> UploadArquivo(UploadDocumentoRequest documentoRequest, string token);
+        Task<UploadDocumentoResponse> UploadDocumento(UploadDocumentoRequest documentoRequest, string token);
     }
 }
