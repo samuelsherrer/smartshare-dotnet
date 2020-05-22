@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SmartShareClient.Model
 {
-    public class ValidarLoginResponse
+    public class GenerateTokenResponse
     {
         public int cdUsuario { get; set; }
         public string tokenUsuario { get; set; }

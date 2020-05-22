@@ -1,201 +1,123 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SmartShareClient.Model;
-using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
+using RestSharp;
+using SmartShareClient.Serializers;
 
 namespace SmartShareClient
 {
     public class SmartShareClient : ISmartShareClient
     {
         private readonly SmartShareOptions _options;
+        private readonly RestClient _client;
 
         public SmartShareClient(SmartShareOptions options) =>
             _options = options;
 
-        public async Task<ValidarLoginResponse> ValidarLogin()
+        private RestRequest ConfigureRequestAuthentication(string path, Method method, string token = null)
         {
-            try
-            {
-                using (var client = new HttpClient())
-                {
+            string endpoint = $"{_options.Endpoint}/{path}";
+            RestRequest request = new RestRequest(endpoint, method, DataFormat.Json);
 
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.AddHeader("dsCliente", _options.ClientId);
+            request.AddHeader("dsChaveAutenticacao", _options.ClientKey);
 
-                    client.DefaultRequestHeaders.Add("dsCliente", _options.ClientId);
-                    client.DefaultRequestHeaders.Add("dsChaveAutenticacao", _options.ClientKey);
+            if (!string.IsNullOrEmpty(token))
+                request.AddHeader("tokenUsuario", token);
 
-                    var validaLogin = new ValidarLoginRequest()
-                    {
-                        dsUsuario = _options.User,
-                        dsSenha = _options.Password
-                    };
-
-                    var content = new StringContent(JsonConvert.SerializeObject(validaLogin), Encoding.UTF8, "application/json");
-
-                    var response = await client.PostAsync($"{_options.Endpoint}/api/v3/Usuario/ValidarLogin", content);
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized)
-                        throw new SmartShareException("Cliente não autorizado.");
-
-                    string resultado = response.Content.ReadAsStringAsync().Result;
-
-                    if (response.StatusCode != HttpStatusCode.OK)
-                        throw new Exception(JsonConvert.DeserializeObject<ErroResponse>(resultado).Message);
-
-                    return JsonConvert.DeserializeObject<ValidarLoginResponse>(resultado);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new SmartShareException(ex.Message);
-            }
+            request.JsonSerializer = new NewtonsoftRestSharpSerializer();
+            return request;
         }
 
-        public async Task<ListaDocumentosResponse> ObterDocumento(int idDocumento, string token)
+        public async Task<GenerateTokenResponse> GenerateToken()
         {
-            if (token == null)
-                throw new ArgumentNullException(nameof(token));
+            var path = $"v3/Usuario/ValidarLogin";
+            var request = ConfigureRequestAuthentication(path, Method.POST);
 
-            try
+            var validaLogin = new GenerateTokenRequest()
             {
-                using (var client = new HttpClient())
-                {
+                dsUsuario = _options.User,
+                dsSenha = _options.Password
+            };
 
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.AddJsonBody(validaLogin);
 
-                    client.DefaultRequestHeaders.Add("tokenUsuario", token);
-                    client.DefaultRequestHeaders.Add("stArquivo", "true");
+            var response = await _client.ExecuteAsync(request);
 
-                    var response = await client.GetAsync($"{_options.Endpoint}/api/v2/Documento/{idDocumento}");
+            if (!response.IsSuccessful)
+                throw new SmartShareException("Error from SmartShare.", response.Content);
 
-                    if (response.StatusCode == HttpStatusCode.Unauthorized)
-                        throw new SmartShareException("Cliente não autorizado.");
-
-                    string resultado = response.Content.ReadAsStringAsync().Result;
-
-                    if (response.StatusCode != HttpStatusCode.OK)
-                        throw new Exception(JsonConvert.DeserializeObject<ErroResponse>(resultado).Message);
-
-                    var documentoResponseHeader = JsonConvert.DeserializeObject<ObterDocumentoResponse>(resultado).versaoDocumentoInfo;
-
-                    return documentoResponseHeader;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new SmartShareException(ex.Message);
-            }
+            return JsonConvert.DeserializeObject<GenerateTokenResponse>(response.Content);
         }
 
-        public async Task<IList<ListaDocumentosResponse>> ListarDocumentos(ListaDocumentoRequest listaDocumentoRequest, string token)
+        public async Task<ListaDocumentosResponse> GetDocument(int idDocumento)
         {
-            if (token == null)
-                throw new ArgumentNullException(nameof(token));
+            var authentication = await GenerateToken();
 
-            try
-            {
-                using (var client = new HttpClient())
-                {
+            string path = $"v2/Documento/{idDocumento}";
+            var request = ConfigureRequestAuthentication(path, Method.GET, authentication.tokenUsuario);
 
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var response = await _client.ExecuteAsync(request);
 
-                    client.DefaultRequestHeaders.Add("tokenUsuario", token);
+            if (!response.IsSuccessful)
+                throw new SmartShareException("Error from SmartShare.", response.Content);
 
-                    var content = new StringContent(JsonConvert.SerializeObject(listaDocumentoRequest), Encoding.UTF8, "application/json");
+            var documentoResponseHeader = JsonConvert.DeserializeObject<ObterDocumentoResponse>(response.Content).versaoDocumentoInfo;
 
-                    var response = await client.PostAsync($"{_options.Endpoint}/api/v2/Documento/ListaDocumentos", content);
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized)
-                        throw new SmartShareException("Cliente não autorizado.");
-
-                    string resultado = response.Content.ReadAsStringAsync().Result;
-
-                    if (response.StatusCode != HttpStatusCode.OK)
-                        throw new Exception(JsonConvert.DeserializeObject<ErroResponse>(resultado).Message);
-
-                    return JsonConvert.DeserializeObject<IList<ListaDocumentosResponse>>(resultado);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new SmartShareException(ex.Message);
-            }
+            return documentoResponseHeader;
         }
 
-        public async Task<UploadDocumentoResponse> UploadDocumento(UploadDocumentoRequest documentoRequest, string token)
+        public async Task<IList<ListaDocumentosResponse>> ListDocuments(ListaDocumentoRequest listaDocumentoRequest)
         {
-            if (token == null)
-                throw new ArgumentNullException(nameof(token));
+            var authentication = await GenerateToken();
 
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            string path = "v2/Documento/ListaDocumentos";
+            var request = ConfigureRequestAuthentication(path, Method.POST, authentication.tokenUsuario);
 
-                    client.DefaultRequestHeaders.Add("tokenUsuario", token);
+            request.AddJsonBody(listaDocumentoRequest);
 
-                    var content = new StringContent(JsonConvert.SerializeObject(documentoRequest), Encoding.UTF8, "application/json");
+            var response = await _client.ExecuteAsync(request);
 
-                    var response = await client.PostAsync($"{_options.Endpoint}/api/v2/Documento", content);
+            if (!response.IsSuccessful)
+                throw new SmartShareException("Error from SmartShare.", response.Content);
 
-                    if (response.StatusCode == HttpStatusCode.Unauthorized)
-                        throw new SmartShareException("Cliente não autorizado.");
-
-                    string resultado = response.Content.ReadAsStringAsync().Result;
-
-                    if (response.StatusCode != HttpStatusCode.OK)
-                        throw new Exception(JsonConvert.DeserializeObject<ErroResponse>(resultado).Message);
-
-                    return JsonConvert.DeserializeObject<UploadDocumentoResponse>(resultado);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new SmartShareException(ex.Message);
-            }
+            return JsonConvert.DeserializeObject<IList<ListaDocumentosResponse>>(response.Content);
         }
 
-        public async Task<bool> ExcluirDocumento(int cdDocumento, int cdVersao, string token)
+        public async Task<UploadDocumentoResponse> UploadDocument(UploadDocumentoRequest documentoRequest)
         {
-            if (token == null)
-                throw new ArgumentNullException(nameof(token));
+            var authentication = await GenerateToken();
 
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            string path = "v2/Documento";
+            var request = ConfigureRequestAuthentication(path, Method.POST, authentication.tokenUsuario);
 
-                    client.DefaultRequestHeaders.Add("tokenUsuario", token);
-                    client.DefaultRequestHeaders.Add("cdDocumento", cdDocumento.ToString());
-                    client.DefaultRequestHeaders.Add("cdVersao", cdVersao.ToString());
+            request.AddJsonBody(documentoRequest);
 
-                    HttpResponseMessage response = await client.DeleteAsync($"{_options.Endpoint}/api/v2/Documento/");
+            var response = await _client.ExecuteAsync(request);
 
-                    if (response.StatusCode == HttpStatusCode.Unauthorized)
-                        throw new Exception("Cliente não autenticado!");
+            if (!response.IsSuccessful)
+                throw new SmartShareException("Error from SmartShare.", response.Content);
 
-                    string resultado = response.Content.ReadAsStringAsync().Result;
+            return JsonConvert.DeserializeObject<UploadDocumentoResponse>(response.Content);
+        }
 
-                    if (response.StatusCode != HttpStatusCode.OK)
-                        throw new Exception(JsonConvert.DeserializeObject<ErroResponse>(resultado).Message);
+        public async Task<ErroResponse> DeleteDocument(int cdDocumento, int cdVersao)
+        {
+            var authentication = await GenerateToken();
 
-                    return await Task.FromResult(true);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new SmartShareException(ex.Message);
-            }
+            string path = "v2/Documento";
+            var request = ConfigureRequestAuthentication(path, Method.DELETE, authentication.tokenUsuario);
+
+            request.AddHeader("cdDocumento", cdDocumento.ToString());
+            request.AddHeader("cdVersao", cdVersao.ToString());
+
+            var response = await _client.ExecuteAsync(request);
+
+            if (!response.IsSuccessful)
+                throw new SmartShareException("Error from SmartShare.", response.Content);
+
+            return JsonConvert.DeserializeObject<ErroResponse>(response.Content);
         }
     }
 }

@@ -8,10 +8,10 @@ namespace SmartShareClient
 {
     public interface ISmartShareClient
     {
-        Task<ValidarLoginResponse> ValidarLogin();
-        Task<ListaDocumentosResponse> ObterDocumento(int idDocumento, string tokenSmartshare);
-        Task<bool> ExcluirDocumento(int cdDocumento, int cdVersao, string token);
-        Task<IList<ListaDocumentosResponse>> ListarDocumentos(ListaDocumentoRequest documentoRequest, string token);
-        Task<UploadDocumentoResponse> UploadDocumento(UploadDocumentoRequest documentoRequest, string token);
+        Task<GenerateTokenResponse> GenerateToken();
+        Task<ListaDocumentosResponse> GetDocument(int idDocumento);
+        Task<ErroResponse> DeleteDocument(int cdDocumento, int cdVersao);
+        Task<IList<ListaDocumentosResponse>> ListDocuments(ListaDocumentoRequest documentoRequest);
+        Task<UploadDocumentoResponse> UploadDocument(UploadDocumentoRequest documentoRequest);
     }
 }
