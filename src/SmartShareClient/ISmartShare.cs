@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartShareClient
 {
-    public interface ISmartShareClient
+    public interface ISmartShare
     {
         Task<GenerateTokenResponse> GenerateTokenAsync();
         Task<ListaDocumentosResponse> GetDocumentAsync(int idDocumento);

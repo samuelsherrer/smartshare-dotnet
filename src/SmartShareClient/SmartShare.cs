@@ -5,22 +5,28 @@ using System.Threading.Tasks;
 using RestSharp;
 using SmartShareClient.Serializers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using System.Net;
+using System;
 
 namespace SmartShareClient
 {
-    public class SmartShareClient : ISmartShareClient
+    public class SmartShare : ISmartShare
     {
         private readonly SmartShareOptions _options;
         private readonly RestClient _client;
 
-        public SmartShareClient(SmartShareOptions options) : this()
-            => _options = options;
+        public SmartShare(IOptions<SmartShareOptions> options)
+        {
+            _options = options.Value;
+            this._client = new RestClient(_options.Endpoint);
+        }
 
-        public SmartShareClient(IConfiguration configuration) : this()
-            => _options = JsonConvert.DeserializeObject<SmartShareOptions>(configuration.GetSection("SmartShare").Value);
-
-        public SmartShareClient()
-            => this._client = new RestClient(_options.Endpoint);
+        public SmartShare(IConfiguration configuration)
+        {
+            _options = configuration.GetSection("SmartShare").Get<SmartShareOptions>();
+            this._client = new RestClient(_options.Endpoint);
+        }
 
         private RestRequest ConfigureRequest(string path, Method method, string token = null)
         {
