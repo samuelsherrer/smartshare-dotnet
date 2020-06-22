@@ -6,10 +6,26 @@ namespace SmartShareClient.Model
 {
     public class SmartShareOptions
     {
-        public string ClientId { get; set; }
-        public string ClientKey { get; set; }
-        public string User { get; set; }
-        public string Password { get; set; }
         public string Endpoint { get; set; }
+
+        /// <summary>
+        /// dsCliente
+        /// </summary>
+        public string ClientId { get; set; }
+
+        /// <summary>
+        /// dsChaveAutenticacao
+        /// </summary>
+        public string ClientKey { get; set; }
+
+        /// <summary>
+        /// dsUsuario
+        /// </summary>
+        public string User { get; set; }
+
+        /// <summary>
+        /// dsSenha
+        /// </summary>
+        public string Password { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using RestSharp;
 using SmartShareClient.Serializers;
+using Microsoft.Extensions.Configuration;
 
 namespace SmartShareClient
 {
@@ -12,10 +13,16 @@ namespace SmartShareClient
         private readonly SmartShareOptions _options;
         private readonly RestClient _client;
 
-        public SmartShareClient(SmartShareOptions options) =>
-            _options = options;
+        public SmartShareClient(SmartShareOptions options) : this()
+            => _options = options;
 
-        private RestRequest ConfigureRequestAuthentication(string path, Method method, string token = null)
+        public SmartShareClient(IConfiguration configuration) : this()
+            => _options = JsonConvert.DeserializeObject<SmartShareOptions>(configuration.GetSection("SmartShare").Value);
+
+        public SmartShareClient()
+            => this._client = new RestClient(_options.Endpoint);
+
+        private RestRequest ConfigureRequest(string path, Method method, string token = null)
         {
             string endpoint = $"{_options.Endpoint}/{path}";
             RestRequest request = new RestRequest(endpoint, method, DataFormat.Json);
@@ -30,10 +37,10 @@ namespace SmartShareClient
             return request;
         }
 
-        public async Task<GenerateTokenResponse> GenerateToken()
+        public async Task<GenerateTokenResponse> GenerateTokenAsync()
         {
             var path = $"v3/Usuario/ValidarLogin";
-            var request = ConfigureRequestAuthentication(path, Method.POST);
+            var request = ConfigureRequest(path, Method.POST);
 
             var validaLogin = new GenerateTokenRequest()
             {
@@ -51,12 +58,12 @@ namespace SmartShareClient
             return JsonConvert.DeserializeObject<GenerateTokenResponse>(response.Content);
         }
 
-        public async Task<ListaDocumentosResponse> GetDocument(int idDocumento)
+        public async Task<ListaDocumentosResponse> GetDocumentAsync(int idDocumento)
         {
-            var authentication = await GenerateToken();
+            var authentication = await GenerateTokenAsync();
 
             string path = $"v2/Documento/{idDocumento}";
-            var request = ConfigureRequestAuthentication(path, Method.GET, authentication.tokenUsuario);
+            var request = ConfigureRequest(path, Method.GET, authentication.TokenUsuario);
 
             var response = await _client.ExecuteAsync(request);
 
@@ -68,12 +75,12 @@ namespace SmartShareClient
             return documentoResponseHeader;
         }
 
-        public async Task<IList<ListaDocumentosResponse>> ListDocuments(ListaDocumentoRequest listaDocumentoRequest)
+        public async Task<IList<ListaDocumentosResponse>> ListDocumentsAsync(ListaDocumentoRequest listaDocumentoRequest)
         {
-            var authentication = await GenerateToken();
+            var authentication = await GenerateTokenAsync();
 
             string path = "v2/Documento/ListaDocumentos";
-            var request = ConfigureRequestAuthentication(path, Method.POST, authentication.tokenUsuario);
+            var request = ConfigureRequest(path, Method.POST, authentication.TokenUsuario);
 
             request.AddJsonBody(listaDocumentoRequest);
 
@@ -85,12 +92,12 @@ namespace SmartShareClient
             return JsonConvert.DeserializeObject<IList<ListaDocumentosResponse>>(response.Content);
         }
 
-        public async Task<UploadDocumentoResponse> UploadDocument(UploadDocumentoRequest documentoRequest)
+        public async Task<UploadDocumentoResponse> UploadDocumentAsync(UploadDocumentoRequest documentoRequest)
         {
-            var authentication = await GenerateToken();
+            var authentication = await GenerateTokenAsync();
 
             string path = "v2/Documento";
-            var request = ConfigureRequestAuthentication(path, Method.POST, authentication.tokenUsuario);
+            var request = ConfigureRequest(path, Method.POST, authentication.TokenUsuario);
 
             request.AddJsonBody(documentoRequest);
 
@@ -102,12 +109,12 @@ namespace SmartShareClient
             return JsonConvert.DeserializeObject<UploadDocumentoResponse>(response.Content);
         }
 
-        public async Task<ErroResponse> DeleteDocument(int cdDocumento, int cdVersao)
+        public async Task<ErroResponse> DeleteDocumentAsync(int cdDocumento, int cdVersao)
         {
-            var authentication = await GenerateToken();
+            var authentication = await GenerateTokenAsync();
 
             string path = "v2/Documento";
-            var request = ConfigureRequestAuthentication(path, Method.DELETE, authentication.tokenUsuario);
+            var request = ConfigureRequest(path, Method.DELETE, authentication.TokenUsuario);
 
             request.AddHeader("cdDocumento", cdDocumento.ToString());
             request.AddHeader("cdVersao", cdVersao.ToString());

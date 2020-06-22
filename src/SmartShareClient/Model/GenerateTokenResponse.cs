@@ -7,7 +7,7 @@ namespace SmartShareClient.Model
 {
     public class GenerateTokenResponse
     {
-        public int cdUsuario { get; set; }
-        public string tokenUsuario { get; set; }
+        public int CdUsuario { get; set; }
+        public string TokenUsuario { get; set; }
     }
 }
