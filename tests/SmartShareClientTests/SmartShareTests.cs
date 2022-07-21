@@ -29,7 +29,6 @@ namespace SmartShareClientTests
 
             this.mockRestClient = new Mock<IRestClient>();
             this.smartShareClient = new SmartShare(configuration, mockRestClient.Object);
-            
         }
 
         [Fact]

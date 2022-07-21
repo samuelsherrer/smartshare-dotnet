@@ -6,8 +6,6 @@ using RestSharp;
 using SmartShareClient.Serializers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System.Net;
-using System;
 
 namespace SmartShareClient
 {
@@ -16,22 +14,20 @@ namespace SmartShareClient
         private readonly SmartShareOptions _options;
         private readonly IRestClient _client;
 
-        public SmartShare(IOptions<SmartShareOptions> options)
+        public SmartShare(IOptions<SmartShareOptions> options, IRestClient client = null)
+            : this(options.Value, client)
         {
-            _options = options.Value;
-            this._client = new RestClient(_options.Endpoint);
         }
 
-        public SmartShare(IConfiguration configuration)
+        public SmartShare(IConfiguration configuration, IRestClient client = null)
+            : this(configuration.GetSection("SmartShare").Get<SmartShareOptions>(), client)
         {
-            _options = configuration.GetSection("SmartShare").Get<SmartShareOptions>();
-            this._client = new RestClient(_options.Endpoint);
         }
 
-        public SmartShare(IConfiguration configuration, IRestClient client)
+        public SmartShare(SmartShareOptions smartShareOptions, IRestClient client = null)
         {
-            _options = configuration.GetSection("SmartShare").Get<SmartShareOptions>();
-            this._client = client;
+            this._options = smartShareOptions;
+            this._client = client ?? new RestClient(smartShareOptions.Endpoint);
         }
 
         private RestRequest ConfigureRequest(string path, Method method, string token = null)
