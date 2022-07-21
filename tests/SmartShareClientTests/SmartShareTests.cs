@@ -53,8 +53,8 @@ namespace SmartShareClientTests
             var result = await smartShareClient.GenerateTokenAsync();
 
             // Assert
-            Assert.Equal(fakeTokenResponse.CdUsuario, fakeTokenResponse.CdUsuario);
-            Assert.Equal(fakeTokenResponse.TokenUsuario, fakeTokenResponse.TokenUsuario);
+            Assert.Equal(result.CdUsuario, fakeTokenResponse.CdUsuario);
+            Assert.Equal(result.TokenUsuario, fakeTokenResponse.TokenUsuario);
         }
     }
 }
