@@ -14,7 +14,7 @@ namespace SmartShareClient
     public class SmartShare : ISmartShare
     {
         private readonly SmartShareOptions _options;
-        private readonly RestClient _client;
+        private readonly IRestClient _client;
 
         public SmartShare(IOptions<SmartShareOptions> options)
         {
@@ -26,6 +26,12 @@ namespace SmartShareClient
         {
             _options = configuration.GetSection("SmartShare").Get<SmartShareOptions>();
             this._client = new RestClient(_options.Endpoint);
+        }
+
+        public SmartShare(IConfiguration configuration, IRestClient client)
+        {
+            _options = configuration.GetSection("SmartShare").Get<SmartShareOptions>();
+            this._client = client;
         }
 
         private RestRequest ConfigureRequest(string path, Method method, string token = null)

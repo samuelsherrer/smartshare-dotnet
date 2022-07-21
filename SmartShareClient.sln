@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29519.87
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartShareClient", "src\SmartShareClient\SmartShareClient.csproj", "{F15BB2CE-9DC5-4B68-9F9B-649E08D1AEF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleCoreProject", "ExampleCoreProject\ExampleCoreProject.csproj", "{64B93DE7-F55B-41B8-A5BC-A3FF4079DF2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleCoreProject", "ExampleCoreProject\ExampleCoreProject.csproj", "{64B93DE7-F55B-41B8-A5BC-A3FF4079DF2F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5F7608E9-28D6-4B4C-A836-48402D68C754}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartShareClientTests", "tests\SmartShareClientTests\SmartShareClientTests.csproj", "{36A3219C-8B5B-4E49-92D6-C02D92E1CD44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +25,16 @@ Global
 		{64B93DE7-F55B-41B8-A5BC-A3FF4079DF2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64B93DE7-F55B-41B8-A5BC-A3FF4079DF2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64B93DE7-F55B-41B8-A5BC-A3FF4079DF2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36A3219C-8B5B-4E49-92D6-C02D92E1CD44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36A3219C-8B5B-4E49-92D6-C02D92E1CD44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36A3219C-8B5B-4E49-92D6-C02D92E1CD44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36A3219C-8B5B-4E49-92D6-C02D92E1CD44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{36A3219C-8B5B-4E49-92D6-C02D92E1CD44} = {5F7608E9-28D6-4B4C-A836-48402D68C754}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD28A8C9-3969-4213-BBC7-4C800A11C06F}
