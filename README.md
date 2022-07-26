@@ -34,5 +34,4 @@ public async Task Foo()
 ```
 
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)loadDocumentAsync(...);
-}
+[MIT](https://choosealicense.com/licenses/mit/)
