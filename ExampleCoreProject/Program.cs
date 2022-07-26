@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Configuration;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,8 +45,7 @@ namespace ExampleCoreProject
         private static async Task InitializeWithConfiguration()
         {
             var client = new SmartShare(Configuration);
-
-            var test = await client.GenerateTokenAsync();
+            var tokenResult = await client.GenerateTokenAsync();
 
             var a = new ListaDocumentoRequest()
             {

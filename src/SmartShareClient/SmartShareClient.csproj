@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <PackageIconUrl>https://i.imgur.com/X49zALe.jpg</PackageIconUrl>
     <RepositoryUrl>https://github.com/SamuelSlf/smartshare-dotnet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -9,15 +9,14 @@
     <Authors>Samuel Sherrer</Authors>
     <Company />
     <Product>SmartShare</Product>
-    <PackageProjectUrl>https://www.selbetti.com.br/selbetti/smart-share-gestao-de-documentos.php</PackageProjectUrl>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <FileVersion>1.0.2.0</FileVersion>
-    <Version>1.0.2</Version>
+    <PackageProjectUrl>http://docs.selbetti.com.br/knowledge-base/smartshare/</PackageProjectUrl>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.5" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.5" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.5" />
@@ -27,5 +26,12 @@
 
   <ItemGroup>
     <Folder Include="Serializers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 </Project>
