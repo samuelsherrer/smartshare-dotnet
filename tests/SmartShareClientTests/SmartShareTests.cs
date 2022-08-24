@@ -1,7 +1,6 @@
-using FizzWare.NBuilder;
 using Microsoft.Extensions.Configuration;
-using Moq;
 using RestSharp;
+using RichardSzalay.MockHttp;
 using SmartShareClient;
 using SmartShareClient.Model;
 using System.Net;
@@ -10,10 +9,8 @@ namespace SmartShareClientTests
 {
     public class SmartShareTests
     {
-        private SmartShare smartShareClient;
-        protected readonly Mock<IRestClient> mockRestClient;
-
-        private Dictionary<string, string> appSettingsStub = new Dictionary<string, string> {
+        private readonly Dictionary<string, string> appSettingsStub = new()
+        {
             {"SmartShare:Endpoint", "http://fakeendpoint"},
             {"SmartShare:ClientId", "fakeclientid"},
             {"SmartShare:ClientKey", "fakeclientkey"},
@@ -21,33 +18,45 @@ namespace SmartShareClientTests
             {"SmartShare:Password", "fakepass"},
         };
 
+        private readonly MockHttpMessageHandler mockHttp = new();
+
+        private readonly IConfiguration configuration;
+
         public SmartShareTests()
         {
-            var configuration = new ConfigurationBuilder()
+            this.configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(appSettingsStub)
                 .Build();
-
-            this.mockRestClient = new Mock<IRestClient>();
-            this.smartShareClient = new SmartShare(configuration, mockRestClient.Object);
         }
 
         [Fact]
         public async Task SmartShareClient_GenerateTokenAsync_EnsureCorrectDeserialization()
         {
             // Arrange
-            var fakeTokenResponse = Builder<GenerateTokenResponse>.CreateNew().Build();
+            var fakeTokenResponse = new GenerateTokenResponse
+            {
+                CdUsuario = 1,
+                TokenUsuario = Guid.NewGuid().ToString()
+            };
 
-            this.mockRestClient
-                .Setup(x => x.ExecuteAsync(It.IsAny<RestRequest>(), CancellationToken.None))
-                .ReturnsAsync(new RestResponse() 
-                { 
-                    StatusCode = HttpStatusCode.OK,
-                    ResponseStatus = ResponseStatus.Completed,
-                    Content = @$"{{
-                                    ""cdUsuario"": {fakeTokenResponse.CdUsuario},
-                                    ""tokenUsuario"": ""{fakeTokenResponse.TokenUsuario}""
-                                  }}"
-                });
+            this.mockHttp
+                .When("*")
+                .Respond(
+                    HttpStatusCode.OK,
+                    "application/json",
+                    @$"{{
+                            ""cdUsuario"": {fakeTokenResponse.CdUsuario},
+                            ""tokenUsuario"": ""{fakeTokenResponse.TokenUsuario}""
+                       }}");
+
+            var options = new RestClientOptions("http://fakeendpoint")
+            {
+                ConfigureMessageHandler = handler => mockHttp
+            };
+
+            var restClient = new RestClient(options);
+
+            var smartShareClient = new SmartShare(configuration, restClient);
 
             // Act
             var result = await smartShareClient.GenerateTokenAsync();
