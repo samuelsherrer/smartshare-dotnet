@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Text.Json.Serialization;
 
 namespace SmartShareClient.Model
 {
@@ -17,11 +16,11 @@ namespace SmartShareClient.Model
         public string dsTipoDocumento { get; set; }
         public string dsArquivoOriginal { get; set; }
 
-        [JsonProperty("lstIndices")]
+        [JsonPropertyName("lstIndices")]
         public List<Indice> ListaIndices { get; set; }
         public int idStatusDocumento { get; set; }
 
-        [JsonProperty("file")]
+        [JsonPropertyName("file")]
         private string _file { get; set; }
     }
 }

@@ -1,9 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SmartShareClient.Model
+﻿namespace SmartShareClient.Model
 {
     public class GenerateTokenResponse
     {
